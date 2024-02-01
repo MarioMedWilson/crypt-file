@@ -1,21 +1,31 @@
 "use client";
-import React, { useState } from 'react';
+import { useState } from 'react';
 import CryptoJS from 'crypto-js';
+import { toast } from 'react-hot-toast';
+import Link from 'next/link'
 
 const Home = () => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState(''); 
-  const [cyrptoString, setCryptoString] = useState(''); 
   const [base64String, setBase64String] = useState('')
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Selected File:', file);
-    console.log('Password:', password);
-    console.log('File Name:', fileName);
+    if (!file) {
+      toast.error("Please select a file");
+      return;
+    }
+    if (!password) {
+      toast.error("Please enter a password");
+      return;
+    }
     const encryptedString = encryptString(base64String, password);
-    console.log('Encrypted String:', encryptedString);
+    const blob = new Blob([encryptedString], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${fileName}.cipher`;
+    link.click();
   };
 
   const encryptString = (text, password) => {
@@ -37,35 +47,21 @@ const Home = () => {
       reader.readAsDataURL(selectedFile);
     }
     setFile(selectedFile);
-    setFileName(selectedFile.name);
+    setFileName(selectedFile.name.split('.')[0]);
   };
 
 
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-    console.log(newPassword);
   };
 
-  const handleDownload = async () => {
-    // Call the API route
-    const response = await fetch('/api');
-    console.log(response);
-    const text = await response.text();
-    console.log(text);
-    // Create a Blob from the text
-    const blob = new Blob([text], { type: 'text/plain' });
 
-    // Create a link element and trigger the download
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${"file"}.txt`;
-    link.click();
-  };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen dark:bg-black dark:text-white">
       <div className="flex flex-col items-center">
+        <h1 className="text-2xl font-bold">Encrypt File</h1>
         <input 
         className="w-4/5 p-2 m-2 border border-gray-300 dark:border-gray-700 rounded-lg text-black dark:text-white bg-white dark:bg-black"
         type="file" onChange={handleFileChange} 
@@ -74,20 +70,26 @@ const Home = () => {
         <input 
         className="w-auto p-1 m-2 border border-gray-300 dark:border-gray-700 rounded-lg text-black dark:text-white bg-white dark:bg-black"
         type="password" value={password} onChange={handlePasswordChange} 
+        placeholder="Password"
         />
 
-        <button 
-          className="p-2 bg-gray-500 text-white dark:bg-blue dark:text-black rounded-lg mt-2"
-          type="submit"
-          onClick={handleSubmit}
-        >
-          Encrypt
-        </button>
+        <div className="flex flex-row items-center">
+          <button 
+            className="p-2 m-3 bg-gray-500 text-white dark:bg-blue dark:text-black rounded-lg mt-2"
+            type="submit"
+            onClick={handleSubmit}
+          >
+            Encrypt
+          </button>
+          <Link 
+            href="/decrypt"
+            className="p-2 m-3 bg-gray-500 text-white dark:bg-blue dark:text-black rounded-lg mt-2"
+          >
+              Decrypt
+          </Link>
+        </div>
       </div>
 
-      <div>
-      <button onClick={handleDownload}>Download Text File</button>
-    </div>
     </div>
     
   );

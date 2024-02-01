@@ -26,19 +26,22 @@ const Home = () => {
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
-
-    if (selectedFile) {
+  
+    if (selectedFile && selectedFile.type === "text/plain") {
       const reader = new FileReader();
-
-      reader.onloadend =  () => {
+  
+      reader.onloadend = () => {
         setBase64String(reader.result);
       };
-
+  
       reader.readAsDataURL(selectedFile);
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+    } else {
+      console.error("Please select a valid .txt file");
     }
-    setFile(selectedFile);
-    setFileName(selectedFile.name);
   };
+  
 
 
   const handlePasswordChange = (e) => {
@@ -68,6 +71,7 @@ const Home = () => {
       <div className="flex flex-col items-center">
         <input 
         className="w-4/5 p-2 m-2 border border-gray-300 dark:border-gray-700 rounded-lg text-black dark:text-white bg-white dark:bg-black"
+        accept=".txt"
         type="file" onChange={handleFileChange} 
         />
 
@@ -81,13 +85,13 @@ const Home = () => {
           type="submit"
           onClick={handleSubmit}
         >
-          Encrypt
+          Decrypt
         </button>
       </div>
 
       <div>
       <button onClick={handleDownload}>Download Text File</button>
-    </div>
+      </div>
     </div>
     
   );

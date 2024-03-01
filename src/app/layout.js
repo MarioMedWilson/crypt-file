@@ -18,6 +18,9 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <Toaster position="bottom-center" />
         {children}
+        <div className="text-center">
+          <footer>&copy; 2024 - Crypt File Developed by Mario </footer>
+        </div>
       </body>
     </html>
   );

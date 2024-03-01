@@ -20,7 +20,7 @@ const Home = () => {
       toast.error("Please enter a password");
       return;
     }
-    const encryptedString = encryptString(base64String, password);
+    const encryptedString = encryptString(base64String, password, file.name);
     const blob = new Blob([encryptedString], { type: 'text/plain' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -28,8 +28,9 @@ const Home = () => {
     link.click();
   };
 
-  const encryptString = (text, password) => {
-    const encrypted = CryptoJS.AES.encrypt(text, password).toString();
+  const encryptString = (text, password, filename) => {
+    const dataToEncrypt = `[${filename}]` + text;
+    const encrypted = CryptoJS.AES.encrypt(dataToEncrypt, password).toString();
     return encrypted;
   }; 
   

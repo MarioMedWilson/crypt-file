@@ -4,7 +4,7 @@ import CryptoJS from 'crypto-js';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link'
 
-const Home = () => {
+const Decrypt = () => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState(''); 
   const [fileContent, setfileContent] = useState('')
@@ -23,7 +23,18 @@ const Home = () => {
 
     const decryptedString = decryptString(fileContent, password);
     if (decryptedString)  {
-      const extension = getExtension(decryptedString);
+      const fileNameRegex = /\[(.*?)\]/;
+      const fileNameMatch = decryptedString.match(fileNameRegex);
+      let originalFileName = "decrypted_file";
+      let extension = ".unknown";
+      if (fileNameMatch && fileNameMatch[1]) {
+        originalFileName = fileNameMatch[1];
+      }
+      const originalExtensionMatch = originalFileName.match(/\.(.*)/);
+      if (originalExtensionMatch && originalExtensionMatch[1]) {
+        extension = `.${originalExtensionMatch[1]}`;
+      }
+
       const base64Data = decryptedString.split(',')[1];
       var binaryData = atob(base64Data);
       // Create a Uint8Array to hold the binary data
@@ -55,27 +66,6 @@ const Home = () => {
     }
   }; 
   
-  function getExtension(data) {
-    var mimeType = data.split(';')[0].replace('data:', '');
-    switch (mimeType) {
-        case 'application/vnd.ms-powerpoint':
-            return '.ppt';
-        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-            return '.docx';
-        case 'application/pdf':
-            return '.pdf';
-        case 'image/jpeg':
-            return '.jpg';
-        case 'image/png':
-            return '.png';
-        case 'application/json':
-            return 'json';
-        case 'video/mp4':
-            return '.mp4';
-        default:
-            return 'unknown';
-    }
-  }
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
@@ -141,4 +131,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Decrypt;

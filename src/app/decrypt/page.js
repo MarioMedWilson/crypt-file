@@ -30,9 +30,12 @@ const Decrypt = () => {
       if (fileNameMatch && fileNameMatch[1]) {
         originalFileName = fileNameMatch[1];
       }
+      console.log(originalFileName)
       const originalExtensionMatch = originalFileName.match(/\.(.*)/);
+      console.log(originalExtensionMatch)
       if (originalExtensionMatch && originalExtensionMatch[1]) {
         extension = `.${originalExtensionMatch[1]}`;
+        originalFileName = originalFileName.replace(/\.(.*)/, ''); 
       }
 
       const base64Data = decryptedString.split(',')[1];
@@ -48,7 +51,7 @@ const Decrypt = () => {
       var link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
 
-      link.download = `${fileName}_decrypted${extension}`;
+      link.download = `${originalFileName}_decrypted${extension}`;
 
       document.body.appendChild(link);
 
